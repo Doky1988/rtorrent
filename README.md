@@ -1,6 +1,6 @@
 <h1 align="center">🚀 rTorrent + ruTorrent Seed Szerver Telepítő</h1>
 <p align="center">
-  <b>Debian 13 | Docker | Caddy | HTTPS | Basic Auth</b>
+  <b>Debian 13 | Docker | Caddy | HTTPS | Basic Auth | Portnyitás (50000/50010)</b>
 </p>
 
 <p align="center">
@@ -13,31 +13,34 @@
 
 ---
 
-Ez a projekt egy teljesen automatizált seed szerver telepítő scriptet tartalmaz, amely Dockerben hozza létre az rTorrent + ruTorrent környezetet, opcionális domain-es HTTPS eléréssel és jelszóvédelemmel.
+Ez a projekt egy teljesen automatizált seed szerver telepítő scriptet tartalmaz, amely Dockerben hozza létre az rTorrent + ruTorrent környezetet, opcionális domain-es HTTPS eléréssel, jelszóvédelemmel és **kinyitott torrent portokkal** biztosítva a teljes értékű seeding működést.
 
 A telepítő támogatja:
 
 - IP alapú WebUI elérés (http://IP:8080)
 - Domain alapú WebUI elérés (HTTPS + Let's Encrypt → https://torrent.domain.hu)
 - Basic Auth jelszóvédelem (bcrypt)
-- Automatikus Docker telepítés
+- Automatikus Docker + Compose telepítés
 - rTorrent + ruTorrent CrazyMax image
 - Caddy reverse proxy automatikusan
-- Letöltési mappák automatikusan létrehozva
+- **Kinyitott torrent portok (50000 TCP/UDP + 50010 UDP) → FULL ACTIVE seeding**
 
 --------------------------------------------
 
 ## 🚀 Funkciók
 
 - Teljesen automatizált telepítés Debian 13-ra  
-- Docker + Compose telepítése   
-- Jelszó bekérése → bcrypt hash generálás  
-- IP vagy Domain alapú mód választása
-- Bejövő torrent port: 50000 TCP/UDP (megnyitva)  
-- DHT port: 50010 UDP (megnyitva)  
+- Docker + Compose telepítése  
+- WebUI felhasználónév és jelszó bekérése  
+- bcrypt hash generálása Caddy-hez  
+- IP vagy Domain alapú üzemmód választása  
 - Domain esetén automatikus HTTPS (Let's Encrypt)  
 - ruTorrent WebUI jelszóval védve  
 - Stabil seed szerver CrazyMax alapokon  
+- **Torrent portnyitás a hoston:**
+  - **50000/tcp → bejövő kapcsolatok**
+  - **50000/udp → UDP tracker / PEX**
+  - **50010/udp → DHT működés**
 
 --------------------------------------------
 
@@ -45,17 +48,17 @@ A telepítő támogatja:
 
 - Debian 13
 - Root hozzáférés
-- Domain mód esetén A rekord a szerver IP-jére kell mutasson
+- Domain mód esetén A rekord a szerver IP-jére
 
 --------------------------------------------
 
 ## 📥 Telepítés
 
 1. Hozd létre a telepítő scriptet:
-    ```bash
-    nano rtorrent_install.sh
+   ```bash
+   nano rtorrent_install.sh
 
-2. Másold be a script teljes tartalmát, majd mentsd el.
+2. Másold ki, majd illeszd be a script teljes tartalmát, és mentsd el.
 
 3. Adj futási jogot:
     ```bash
@@ -69,16 +72,16 @@ A telepítő támogatja:
    - WebUI felhasználónév
    - WebUI jelszó
    - IP vagy Domain mód
-   - Domain esetén → add meg: torrent.domain.hu
+   - Domain esetén → Add meg a saját domained, pl.: **torrent.domain.hu**
 
 --------------------------------------------
 
 ## 🌍 Elérés
 
-### IP mód esetén:
+### 🔵 IP mód esetén:
 http://ip-címed:8080
 
-### Domain mód esetén (HTTPS):
+### 🟢 Domain mód esetén (HTTPS):
 https://torrent.domain.hu
 
 --------------------------------------------
@@ -87,54 +90,66 @@ https://torrent.domain.hu
 
 A WebUI alapértelmezés szerint jelszóval védett.  
 A telepítő:
-
 - bekéri a felhasználónevet  
 - bekéri a jelszót  
 - bcrypt hash-t generál Caddy számára  
 
 --------------------------------------------
 
+## 🔥 Torrent Port Információk (FULL ACTIVE mód)
+
+A telepítő automatikusan megnyitja:
+
+| Port | Protokoll | Funkció |
+|------|-----------|---------|
+| **50000** | TCP | Bejövő seed kapcsolatok |
+| **50000** | UDP | UDP tracker / Peer Exchange |
+| **50010** | UDP | DHT node port |
+
+Ez garantálja:
+
+- aktív seed státuszt
+- stabil peer-forgalmat
+- gyors csatlakozást
+- maximális sebességet
+
+--------------------------------------------
+
 ## 🧩 Használt Docker konténerek
 
 - **crazymax/rtorrent-rutorrent**  
-  rTorrent + ruTorrent + Nginx + PHP-FPM egy konténerben
+  (rTorrent + ruTorrent + Nginx + PHP-FPM egy konténerben)
 
 - **caddy:latest**  
-  Reverse proxy + HTTPS a domain módhoz
+  (Reverse proxy + HTTPS a domain módhoz)
 
 --------------------------------------------
 
 ## 🔄 Update Script – rTorrent + ruTorrent frissítése
 
-A projekt tartalmaz egy külön frissítő scriptet is, amellyel egyszerűen naprakészen tarthatod a seed szerveredet.
+A projekt tartalmaz egy külön update scriptet is.
 
-### 📥 Update script létrehozása
-
-1. Hozd létre a frissítő scriptet:
-    ```bash
+### Létrehozás: 
     nano /opt/rtorrent/update_rtorrent.sh
 
-2. Másold ki innen, és illeszd be a teljes update script tartalmát, majd mentsd el.
+Másold be a script tartalmát.
 
-3. Adj futási jogot:
-    ```bash
+### Futási jog:
     chmod +x /opt/rtorrent/update_rtorrent.sh
 
-### ▶ Futtatás (frissítés indítása)
-
+### Indítás:
     /opt/rtorrent/update_rtorrent.sh
 
 ### Mit csinál?
 
-- Letölti a legújabb Docker image-eket (rTorrent + Caddy)
+- Frissíti az összes Docker image-et
 - Újraindítja a konténereket
-- Törli a régi, nem használt image-eket
-- Kiírja a futó konténerek státuszát
-
-A frissítés teljesen biztonságos:
-- a letöltéseid
-- beállításaid
-- jelszavaid **nem törlődnek**
+- Törli a nem használt régi image-eket
+- Megőrzi:
+  - a torrentek állapotát
+  - konfigurációkat
+  - jelszót
+  - beállításokat
 
 --------------------------------------------
 
