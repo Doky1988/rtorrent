@@ -4,7 +4,7 @@ set -euo pipefail
 echo "============================================="
 echo " rTorrent + ruTorrent Telepítő (CrazyMax)"
 echo " IP vagy DOMAIN alapú WebUI + Jelszóvédelem"
-echo " Debian 13 | by Doky"
+echo " Tesztelve, és ajánlott: Debian 13 rendszer"
 echo "============================================="
 sleep 1
 
