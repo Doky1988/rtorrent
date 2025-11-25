@@ -132,8 +132,7 @@ A projekt tartalmaz egy külön frissítő scriptet is, amellyel egyszerűen nap
 A frissítés teljesen biztonságos:
 - a letöltéseid
 - beállításaid
-- jelszavaid  
-**nem törlődnek**
+- jelszavaid **nem törlődnek**
 
 --------------------------------------------
 
