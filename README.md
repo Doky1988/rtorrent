@@ -13,18 +13,17 @@
 
 ---
 
-
 Ez a projekt egy teljesen automatizált seed szerver telepítő scriptet tartalmaz, amely Dockerben hozza létre az rTorrent + ruTorrent környezetet, opcionális domain-es HTTPS eléréssel és jelszóvédelemmel.
 
 A telepítő támogatja:
 
 - IP alapú WebUI elérés (http://IP:8080)
-- Domain alapú WebUI elérés (HTTPS + Let's Encrypt → https://torrent.domained.hu)
+- Domain alapú WebUI elérés (HTTPS + Let's Encrypt → https://torrent.domain.hu)
 - Basic Auth jelszóvédelem (bcrypt)
 - Automatikus Docker telepítés
 - rTorrent + ruTorrent CrazyMax image
-- Teljesen automatizált Caddy reverse proxy
-- Letöltési mappák automatikus létrehozása
+- Caddy reverse proxy automatikusan
+- Letöltési mappák automatikusan létrehozva
 
 --------------------------------------------
 
@@ -33,7 +32,7 @@ A telepítő támogatja:
 - Teljesen automatizált telepítés Debian 13-ra  
 - Docker + Compose telepítése  
 - Jelszó bekérése → bcrypt hash generálás  
-- IP vs. Domain alapú üzemmód választása  
+- IP vagy Domain alapú mód választása  
 - Domain esetén automatikus HTTPS (Let's Encrypt)  
 - ruTorrent WebUI jelszóval védve  
 - Stabil seed szerver CrazyMax alapokon  
@@ -44,7 +43,7 @@ A telepítő támogatja:
 
 - Debian 13
 - Root hozzáférés
-- Domain opció esetén A rekord a szerver IP-jére
+- Domain mód esetén A rekord a szerver IP-jére kell mutasson
 
 --------------------------------------------
 
@@ -54,7 +53,7 @@ A telepítő támogatja:
     ```bash
     nano rtorrent_install.sh
 
-2. Másold ki, majd illeszd be a script teljes tartalmát, és mentsd el.
+2. Másold be a script teljes tartalmát, majd mentsd el.
 
 3. Adj futási jogot:
     ```bash
@@ -68,16 +67,16 @@ A telepítő támogatja:
    - WebUI felhasználónév
    - WebUI jelszó
    - IP vagy Domain mód
-   - Domain esetén → add meg a saját domained, pl.: **torrent.domain.hu**
+   - Domain esetén → add meg: torrent.domain.hu
 
 --------------------------------------------
 
 ## 🌍 Elérés
 
-### IP mód esetén
+### IP mód esetén:
 http://ip-címed:8080
 
-### Domain mód esetén (HTTPS)
+### Domain mód esetén (HTTPS):
 https://torrent.domain.hu
 
 --------------------------------------------
@@ -86,6 +85,7 @@ https://torrent.domain.hu
 
 A WebUI alapértelmezés szerint jelszóval védett.  
 A telepítő:
+
 - bekéri a felhasználónevet  
 - bekéri a jelszót  
 - bcrypt hash-t generál Caddy számára  
@@ -94,11 +94,46 @@ A telepítő:
 
 ## 🧩 Használt Docker konténerek
 
-- crazymax/rtorrent-rutorrent  
-  (rTorrent + ruTorrent + Nginx + PHP-FPM egy konténerben)
+- **crazymax/rtorrent-rutorrent**  
+  rTorrent + ruTorrent + Nginx + PHP-FPM egy konténerben
 
-- caddy:latest  
-  (Reverse proxy + HTTPS a domain módhoz)
+- **caddy:latest**  
+  Reverse proxy + HTTPS a domain módhoz
+
+--------------------------------------------
+
+## 🔄 Update Script – rTorrent + ruTorrent frissítése
+
+A projekt tartalmaz egy külön frissítő scriptet is, amellyel egyszerűen naprakészen tarthatod a seed szerveredet.
+
+### 📥 Update script létrehozása
+
+1. Hozd létre a frissítő scriptet:
+    ```bash
+    nano /opt/rtorrent/update_rtorrent.sh
+
+2. Másold ki innen, és illeszd be a teljes update script tartalmát, majd mentsd el.
+
+3. Adj futási jogot:
+    ```bash
+    chmod +x /opt/rtorrent/update_rtorrent.sh
+
+### ▶ Futtatás (frissítés indítása)
+
+    ./opt/rtorrent/update_rtorrent.sh
+
+### Mit csinál?
+
+- Letölti a legújabb Docker image-eket (rTorrent + Caddy)
+- Újraindítja a konténereket
+- Törli a régi, nem használt image-eket
+- Kiírja a futó konténerek státuszát
+
+A frissítés teljesen biztonságos:
+- a letöltéseid
+- beállításaid
+- jelszavaid  
+**nem törlődnek**
 
 --------------------------------------------
 
