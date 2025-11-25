@@ -132,7 +132,7 @@ A projekt tartalmaz egy külön update scriptet is.
 ### Létrehozás: 
     nano /opt/rtorrent/update_rtorrent.sh
 
-Másold be a script tartalmát.
+Másold ki, majd illeszd be a script teljes tartalmát, és mentsd el.
 
 ### Futási jog:
     chmod +x /opt/rtorrent/update_rtorrent.sh
