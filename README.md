@@ -46,7 +46,7 @@ A telepítő támogatja:
 
 ## 📦 Követelmények
 
-- Debian 13
+- Debian 13 (Ezen lett **TESZTELVE** a script!)
 - Root hozzáférés
 - Domain mód esetén A rekord a szerver IP-jére
 
