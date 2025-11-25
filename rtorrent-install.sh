@@ -2,24 +2,24 @@
 set -euo pipefail
 
 echo "============================================="
-echo " rTorrent + ruTorrent Telepítő (CrazyMax)"
-echo " IP vagy DOMAIN alapú WebUI + Jelszóvédelem"
-echo " Tesztelve, és ajánlott: Debian 13 rendszer"
+echo " rTorrent + ruTorrent Seed Telepítő"
+echo " Portnyitással (50000 TCP/UDP, 50010 UDP)"
+echo " Debian 13 | Docker | Caddy | HTTPS | Auth"
 echo "============================================="
 sleep 1
 
-# --- Root Check ---
+# --- Root check ---
 if [ "$EUID" -ne 0 ]; then
-  echo "A scriptet rootként kell futtatni!"
+  echo "Rootként futtasd!"
   exit 1
 fi
 
-# --- Felhasználónév + Jelszó bekérése ---
+# --- Felhasználónév + Jelszó ---
 read -rp "Add meg a WebUI felhasználónevet: " WEBUSER
 read -rsp "Add meg a WebUI jelszót: " WEBPASS
 echo ""
 
-# --- IP vagy Domain választás ---
+# --- IP vagy Domain mód ---
 echo ""
 echo "Hogyan szeretnéd elérni a WebUI-t?"
 echo "1) IP címmel (http://IP:8080)"
@@ -34,12 +34,10 @@ if [ "$CHOICE" = "2" ]; then
   read -rp "Add meg a domaint (pl. torrent.domain.hu): " DOMAIN
 fi
 
-# --- Rendszer frissítése ---
-echo "== Rendszer frissítése =="
+# --- Rendszer frissítés ---
 apt update -y && apt upgrade -y
 
-# --- Docker telepítése ---
-echo "== Docker telepítése =="
+# --- Docker telepítés ---
 apt install -y ca-certificates curl gnupg lsb-release openssl
 
 install -m 0755 -d /etc/apt/keyrings
@@ -57,26 +55,22 @@ echo \
 apt update -y
 apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin
 
-echo "== Könyvtárak létrehozása =="
+# --- Könyvtárak ---
 mkdir -p /opt/rtorrent/data
 mkdir -p /opt/rtorrent/caddy
-
 cd /opt/rtorrent
 
-# --- BCRYPT HASH generálása Caddy-vel (Caddy image-ből) ---
-echo "== Jelszó hash generálása Caddy-vel (bcrypt) =="
+# --- Hash generálás ---
 HASH=$(docker run --rm caddy:latest caddy hash-password --plaintext "$WEBPASS")
 
-echo "Generált hash:"
+echo "Generált bcrypt hash:"
 echo "$HASH"
 echo ""
 
-# --- docker-compose.yml generálása ---
-echo "== docker-compose.yml generálása =="
-
+# --- docker-compose generálás ---
 if [ "$USE_DOMAIN" = "no" ]; then
-  # IP-s mód (HTTP, port 8080, Caddy reverse proxy + basic_auth)
-  cat > /opt/rtorrent/docker-compose.yml <<EOF
+
+cat > /opt/rtorrent/docker-compose.yml <<EOF
 version: "3.8"
 
 services:
@@ -84,6 +78,10 @@ services:
     image: crazymax/rtorrent-rutorrent:latest
     container_name: rtorrent-rutorrent
     restart: unless-stopped
+    ports:
+      - "50000:50000/tcp"
+      - "50000:50000/udp"
+      - "50010:50010/udp"
     environment:
       - RTORRENT__PORT_RANGE=50000-50000
       - RTORRENT__DHT_PORT=50010
@@ -110,8 +108,7 @@ networks:
     driver: bridge
 EOF
 
-  echo "== Caddyfile generálása (IP mód) =="
-  cat > /opt/rtorrent/caddy/Caddyfile <<EOF
+cat > /opt/rtorrent/caddy/Caddyfile <<EOF
 :80 {
     encode gzip
     reverse_proxy rtorrent-rutorrent:8080
@@ -123,8 +120,8 @@ EOF
 EOF
 
 else
-  # DOMAIN mód (HTTPS, Caddy + Let's Encrypt)
-  cat > /opt/rtorrent/docker-compose.yml <<EOF
+
+cat > /opt/rtorrent/docker-compose.yml <<EOF
 version: "3.8"
 
 services:
@@ -132,6 +129,10 @@ services:
     image: crazymax/rtorrent-rutorrent:latest
     container_name: rtorrent-rutorrent
     restart: unless-stopped
+    ports:
+      - "50000:50000/tcp"
+      - "50000:50000/udp"
+      - "50010:50010/udp"
     environment:
       - RTORRENT__PORT_RANGE=50000-50000
       - RTORRENT__DHT_PORT=50010
@@ -165,8 +166,7 @@ networks:
     driver: bridge
 EOF
 
-  echo "== Caddyfile generálása (DOMAIN mód) =="
-  cat > /opt/rtorrent/caddy/Caddyfile <<EOF
+cat > /opt/rtorrent/caddy/Caddyfile <<EOF
 ${DOMAIN} {
     encode gzip
     reverse_proxy rtorrent-rutorrent:8080
@@ -179,24 +179,23 @@ EOF
 
 fi
 
-echo "== Konténerek indítása =="
+# --- Indítás ---
 docker compose up -d
 
 IP=$(hostname -I | awk '{print $1}')
 
 echo "============================================="
-echo "   ✔ Telepítés kész!"
+echo "     ✔ Telepítés kész! Seed szerver aktív!"
 echo ""
 if [ "$USE_DOMAIN" = "yes" ]; then
-  echo "   🌍 WebUI (HTTPS): https://${DOMAIN}/"
-  echo "   (Figyelj rá, hogy a domain A rekordja erre az IP-re mutasson: ${IP})"
+  echo " WebUI (HTTPS): https://${DOMAIN}"
 else
-  echo "   🌍 WebUI (HTTP):  http://${IP}:8080/"
+  echo " WebUI (HTTP):  http://${IP}:8080"
 fi
 echo ""
-echo "   👤 Felhasználó: ${WEBUSER}"
-echo "   🔑 Jelszó: (amit megadtál)"
+echo " Bejövő torrent port: 50000 TCP/UDP (megnyitva)"
+echo " DHT port: 50010 UDP (megnyitva)"
 echo ""
-echo "   Letöltések: /opt/rtorrent/data/downloads"
-echo "   Watch mappa: /opt/rtorrent/data/watch"
+echo " Felhasználó: ${WEBUSER}"
+echo " Jelszó: (amit megadtál)"
 echo "============================================="
