@@ -1,4 +1,18 @@
-# rTorrent + ruTorrent Seed Szerver Telepítő (Debian 13)
+<h1 align="center">🚀 rTorrent + ruTorrent Seed Szerver Telepítő</h1>
+<p align="center">
+  <b>Debian 13 | Docker | Caddy | HTTPS | Basic Auth</b>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Debian-13-red?style=for-the-badge&logo=debian" />
+  <img src="https://img.shields.io/badge/Docker-Supported-2496ED?style=for-the-badge&logo=docker" />
+  <img src="https://img.shields.io/badge/rTorrent-CrazyMax-orange?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/WebUI-ruTorrent-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/HTTPS-Let's Encrypt-yellow?style=for-the-badge&logo=letsencrypt" />
+</p>
+
+---
+
 
 Ez a projekt egy teljesen automatizált seed szerver telepítő scriptet tartalmaz, amely Dockerben hozza létre az rTorrent + ruTorrent környezetet, opcionális domain-es HTTPS eléréssel és jelszóvédelemmel.
 
