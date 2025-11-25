@@ -120,7 +120,7 @@ A projekt tartalmaz egy külön frissítő scriptet is, amellyel egyszerűen nap
 
 ### ▶ Futtatás (frissítés indítása)
 
-    ./opt/rtorrent/update_rtorrent.sh
+    /opt/rtorrent/update_rtorrent.sh
 
 ### Mit csinál?
 
