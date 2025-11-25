@@ -23,7 +23,7 @@ echo ""
 echo ""
 echo "Hogyan szeretnéd elérni a WebUI-t?"
 echo "1) IP címmel (http://IP:8080)"
-echo "2) Domainnel + HTTPS (https://domain.hu)"
+echo "2) Domainnel + HTTPS (https://torrent.domain.hu)"
 read -rp "Válassz (1 vagy 2): " CHOICE
 
 USE_DOMAIN="no"
@@ -31,7 +31,7 @@ DOMAIN=""
 
 if [ "$CHOICE" = "2" ]; then
   USE_DOMAIN="yes"
-  read -rp "Add meg a domaint (pl. rt.zsolti.hu): " DOMAIN
+  read -rp "Add meg a domaint (pl. torrent.domain.hu): " DOMAIN
 fi
 
 # --- Rendszer frissítése ---
