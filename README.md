@@ -30,9 +30,11 @@ A telepítő támogatja:
 ## 🚀 Funkciók
 
 - Teljesen automatizált telepítés Debian 13-ra  
-- Docker + Compose telepítése  
+- Docker + Compose telepítése   
 - Jelszó bekérése → bcrypt hash generálás  
-- IP vagy Domain alapú mód választása  
+- IP vagy Domain alapú mód választása
+- Bejövő torrent port: 50000 TCP/UDP (megnyitva)  
+- DHT port: 50010 UDP (megnyitva)  
 - Domain esetén automatikus HTTPS (Let's Encrypt)  
 - ruTorrent WebUI jelszóval védve  
 - Stabil seed szerver CrazyMax alapokon  
