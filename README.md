@@ -142,8 +142,19 @@ A projekt frissítő scriptet is tartalmaz, amely:
 - DOMAIN módban automatikusan újraindítja a Caddyt  
 - Minden beállítás megmarad  
 
-Frissítés futtatása:  
-/opt/rtorrent-rutorrent/update.sh
+1) Frissítőfájl létrehozása:  
+   ```bash
+   nano /opt/rtorrent-rutorrent/rtorrent_updater.sh
+
+2) Másold bele a teljes telepítő scriptet, és mentsd el.
+
+3) Futási jog adása:  
+   ```bash
+   chmod +x /opt/rtorrent-rutorrent/rtorrent_updater.sh
+
+4) Frissítés futtatása:  
+   ```bash
+   /opt/rtorrent-rutorrent/rtorrent_updater.sh
 
 ---
 
