@@ -112,16 +112,16 @@ Telepítés után:
 1. Nyisd meg a Transdrone-t  
 2. Add hozzá → *Add normal, custom server*  
 3. Töltsd ki az adatokat
-   - Név: Bármi lehet
-   - Szerver típus: rTorrent
-   - IP vagy hostnév: IP-t írd!
-   - Felhasználónév: Telepítőben megadott!
-   - Jelszó: Telepítőben megadott!
+  - Név: Bármi lehet
+  - Szerver típus: rTorrent
+  - IP vagy hostnév: IP-t írd!
+  - Felhasználónév: Telepítőben megadott!
+  - Jelszó: Telepítőben megadott!
 
 **Haladó beállítások:**
 
-   - Port szám: 8000
-   - SCGI csatlakozási pont: /RPC2
+  - Port szám: 8000
+  - SCGI csatlakozási pont: /RPC2
  
 4. Kész – távoli vezérlés és torrent kezelés már mobilról is működik
 
