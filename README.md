@@ -1,159 +1,128 @@
-<h1 align="center">🚀 rTorrent + ruTorrent Seed Szerver Telepítő</h1>
-<p align="center">
-  <b>Debian 13 | Docker | Caddy | HTTPS | Basic Auth | Portnyitás (50000/50010)</b>
-</p>
+# 🚀 rTorrent + ruTorrent Telepítő (crazy-max) – IP / DOMAIN mód  
+**Debian 12–13 | Docker | Caddy HTTPS (opcionális)**  
+**Transdrone / Transdroid kompatibilis ✔️**
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Debian-13-red?style=for-the-badge&logo=debian" />
+  <img src="https://img.shields.io/badge/Debian-12%2F13-red?style=for-the-badge&logo=debian" />
   <img src="https://img.shields.io/badge/Docker-Supported-2496ED?style=for-the-badge&logo=docker" />
-  <img src="https://img.shields.io/badge/rTorrent-CrazyMax-orange?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/WebUI-ruTorrent-blue?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/HTTPS-Let's Encrypt-yellow?style=for-the-badge&logo=letsencrypt" />
+  <img src="https://img.shields.io/badge/rTorrent-Enabled-00aa00?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/ruTorrent-WebUI-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Caddy-HTTPS-green?style=for-the-badge&logo=caddy" />
+  <img src="https://img.shields.io/badge/Transdrone-Compatible-ffcc00?style=for-the-badge" />
 </p>
+
+Ez a projekt egy teljesen automatizált telepítő scriptet tartalmaz a crazy-max/rtorrent-rutorrent konténerhez.  
+A telepítés során választható:
+
+- **IP mód** → WebUI: http://IP:8080  
+- **DOMAIN mód** → HTTPS (Caddy) + IP tiltás (403)
+
+Mindkét mód teljes XMLRPC authent használ → 100% kompatibilis Transdrone / Transdroid appokkal.
 
 ---
 
-Ez a projekt egy teljesen automatizált seed szerver telepítő scriptet tartalmaz, amely Dockerben hozza létre az rTorrent + ruTorrent környezetet, opcionális domain-es HTTPS eléréssel, jelszóvédelemmel és **kinyitott torrent portokkal** biztosítva a teljes értékű seeding működést.
+## ⭐ Funkciók
 
-A telepítő támogatja:
+- Teljesen automatizált telepítés Debian 12 / 13 alatt  
+- rTorrent + ruTorrent (crazy-max)  
+- XMLRPC jelszó → stabil Transdrone kapcsolat  
+- IP vagy Domain mód választható  
+- DOMAIN módban automatikus Let’s Encrypt tanúsítvány  
+- Javított Caddyfile → ruTorrent UI hibamentes  
+- Torrent portok automatikusan nyitva a Dockerben
 
-- IP alapú WebUI elérés (http://IP:8080)
-- Domain alapú WebUI elérés (HTTPS + Let's Encrypt → https://torrent.domain.hu)
-- Basic Auth jelszóvédelem (bcrypt)
-- Automatikus Docker + Compose telepítés
-- rTorrent + ruTorrent CrazyMax image
-- Caddy reverse proxy automatikusan
-- **Kinyitott torrent portok (50000 TCP/UDP + 50010 UDP) → FULL ACTIVE seeding**
+---
 
---------------------------------------------
+## 🧱 Telepítés
 
-## 🚀 Funkciók
+1) Telepítőfájl létrehozása:  
+nano rtorrent_installer.sh
 
-- Teljesen automatizált telepítés Debian 13-ra  
-- Docker + Compose telepítése  
-- WebUI felhasználónév és jelszó bekérése  
-- bcrypt hash generálása Caddy-hez  
-- IP vagy Domain alapú üzemmód választása  
-- Domain esetén automatikus HTTPS (Let's Encrypt)  
-- ruTorrent WebUI jelszóval védve  
-- Stabil seed szerver CrazyMax alapokon  
-- **Torrent portnyitás a hoston:**
-  - **50000/tcp → bejövő kapcsolatok**
-  - **50000/udp → UDP tracker / PEX**
-  - **50010/udp → DHT működés**
+2) Másold bele a teljes telepítő scriptet
 
---------------------------------------------
+3) Futási jog adása:  
+chmod +x rtorrent_installer.sh
 
-## 📦 Követelmények
+4) Telepítés futtatása:  
+./rtorrent_installer.sh
 
-- Debian 13 (Ezen lett **TESZTELVE** a script!)
-- Root hozzáférés
-- Domain mód esetén A rekord a szerver IP-jére
+A script megkérdezi:
 
---------------------------------------------
+- IP / Domain mód  
+- Domain név (ha HTTPS-t választottad)  
+- Felhasználónév  
+- Jelszó  
 
-## 📥 Telepítés
+---
 
-1. Hozd létre a telepítő scriptet:
-   ```bash
-   nano rtorrent_install.sh
+## 🌐 Elérési módok
 
-2. Másold ki, majd illeszd be a script teljes tartalmát, és mentsd el.
+### 🔵 IP mód
+WebUI:  
+http://IP:8080  
 
-3. Adj futási jogot:
-    ```bash
-    chmod +x rtorrent_install.sh
+Egyszerű, gyors, proxy nélkül.  
+Transdrone: továbbra is IP:8000 porton működik.
 
-4. Indítsd el:
-    ```bash
-    ./rtorrent_install.sh
+### 🟢 DOMAIN mód (HTTPS + Caddy)
+WebUI:  
+https://yourdomain.hu  
 
-5. Kövesd a telepítő kérdéseit:
-   - WebUI felhasználónév
-   - WebUI jelszó
-   - IP vagy Domain mód
-   - Domain esetén → Add meg a saját domained, pl.: **torrent.domain.hu**
+- Automatikus Let’s Encrypt tanúsítvány  
+- IP-ről WebUI → 403 Forbidden  
+- ruTorrent UI hibátlan (javított proxy)  
+- Transdrone → továbbra is IP:8000 (nem proxyzva)
 
---------------------------------------------
+---
 
-## 🌍 Elérés
+## 📱 Transdrone / Transdroid beállítás
 
-### 🔵 IP mód esetén:
-http://ip-címed:8080
+A telepítő script XMLRPC jelszavas elérést készít elő.
 
-### 🟢 Domain mód esetén (HTTPS):
-https://torrent.domain.hu
+**Beállítások:**
 
---------------------------------------------
+- Típus: rTorrent (HTTP/XMLRPC)  
+- Host: VPS IP  
+- Port: 8000  
+- Felhasználó: telepítéskor megadott  
+- Jelszó: telepítéskor megadott  
+- RPC Path: /RPC2  
 
-## 🔐 Hitelesítés
+FONTOS: Domain módban is **IP-t kell használni** Transdrone-hoz, mert a mobilapp nem működik HTTPS reverse proxy mögött.
 
-A WebUI alapértelmezés szerint jelszóval védett.  
-A telepítő:
-- bekéri a felhasználónevet  
-- bekéri a jelszót  
-- bcrypt hash-t generál Caddy számára  
+---
 
---------------------------------------------
+## 🔥 Portok (mind nyitva vannak Dockerben)
 
-## 🔥 Torrent Port Információk (FULL ACTIVE mód)
+8080/tcp → ruTorrent WebUI (IP mód)  
+8000/tcp → XMLRPC (Transdrone)  
+9000/tcp → SCGI backend  
+50000/tcp → Torrent bejövő port ✔️  
+6881/udp → DHT / uTP port ✔️  
+80/tcp → Caddy HTTP (DOMAIN mód)  
+443/tcp → Caddy HTTPS (DOMAIN mód)
 
-A telepítő automatikusan megnyitja:
+Torrentezéshez fontos portok automatikusan nyitva vannak:
 
-| Port | Protokoll | Funkció |
-|------|-----------|---------|
-| **50000** | TCP | Bejövő seed kapcsolatok |
-| **50000** | UDP | UDP tracker / Peer Exchange |
-| **50010** | UDP | DHT node port |
+- 50000/tcp – incoming TCP  
+- 6881/udp – DHT  
 
-Ez garantálja:
+---
 
-- aktív seed státuszt
-- stabil peer-forgalmat
-- gyors csatlakozást
-- maximális sebességet
+## 🔄 Frissítés (UPDATE script)
 
---------------------------------------------
+A projekt frissítő scriptet is tartalmaz, amely:
 
-## 🧩 Használt Docker konténerek
+- Letölti a legújabb rTorrent image-et  
+- Újraindítja a rTorrent konténert  
+- DOMAIN módban automatikusan újraindítja a Caddyt  
+- Minden beállítás megmarad  
 
-- **crazymax/rtorrent-rutorrent**  
-  (rTorrent + ruTorrent + Nginx + PHP-FPM egy konténerben)
+Frissítés futtatása:  
+/opt/rtorrent-rutorrent/update.sh
 
-- **caddy:latest**  
-  (Reverse proxy + HTTPS a domain módhoz)
+---
 
---------------------------------------------
+## 🎉 Kész!
 
-## 🔄 Update Script – rTorrent + ruTorrent frissítése
-
-A projekt tartalmaz egy külön update scriptet is.
-
-### Létrehozás: 
-    nano /opt/rtorrent/update_rtorrent.sh
-
-Másold ki, majd illeszd be a script teljes tartalmát, és mentsd el.
-
-### Futási jog:
-    chmod +x /opt/rtorrent/update_rtorrent.sh
-
-### Indítás:
-    /opt/rtorrent/update_rtorrent.sh
-
-### Mit csinál?
-
-- Frissíti az összes Docker image-et
-- Újraindítja a konténereket
-- Törli a nem használt régi image-eket
-- Megőrzi:
-  - a torrentek állapotát
-  - konfigurációkat
-  - jelszót
-  - beállításokat
-
---------------------------------------------
-
-## ✨ Készítette
-
-**Doky**  
-2025.11.25
+Ez a README lefedi a teljes telepítést, IP/DOMAIN módot, portokat, HTTPS működést és a Transdrone kompatibilitást.
