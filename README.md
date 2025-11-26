@@ -70,7 +70,7 @@ Transdrone: továbbra is IP:8000 porton működik.
 
 ### 🟢 DOMAIN mód (HTTPS + Caddy)
 WebUI:  
-https://yourdomain.hu  
+https://te.domained.hu  
 
 - Automatikus Let’s Encrypt tanúsítvány  
 - IP-ről WebUI → 403 Forbidden  
@@ -85,8 +85,8 @@ A telepítő script XMLRPC jelszavas elérést készít elő.
 
 Beállítások:
 
-- Típus: rTorrent (HTTP/XMLRPC)  
-- Host: VPS IP  
+- Típus: rTorrent  
+- Host: IP CÍMED  
 - Port: 8000  
 - Felhasználó: telepítéskor megadott  
 - Jelszó: telepítéskor megadott  
