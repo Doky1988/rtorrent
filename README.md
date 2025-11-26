@@ -111,7 +111,7 @@ Telepítés után:
 
 1. Nyisd meg a Transdrone-t  
 2. Add hozzá → *Add normal, custom server*  
-3. Töltsd ki az adatokat:
+3. **Töltsd ki az adatokat:**
 
    - Név: Bármi lehet
    - Szerver típus: rTorrent
