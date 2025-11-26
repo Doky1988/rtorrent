@@ -66,7 +66,7 @@ WebUI:
 http://IP:8080  
 
 Egyszerű, gyors, proxy nélkül.  
-Transdrone: továbbra is IP:8000 porton működik.
+Transdrone: IP:8000 porton működik.
 
 ### 🟢 DOMAIN mód (HTTPS + Caddy)
 WebUI:  
