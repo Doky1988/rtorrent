@@ -114,10 +114,10 @@ Telepítés után:
 3. **Töltsd ki az adatokat:**
 
   - Név: Bármi lehet
-   - Szerver típus: rTorrent
-   - IP vagy hostnév: IP-t írd!
-   - Felhasználónév: Telepítőben megadott!
-   - Jelszó: Telepítőben megadott!
+  - Szerver típus: rTorrent
+  - IP vagy hostnév: IP-t írd!
+  - Felhasználónév: Telepítőben megadott!
+  - Jelszó: Telepítőben megadott!
 
 **Haladó beállítások:**
 
