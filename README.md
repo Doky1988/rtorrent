@@ -37,6 +37,7 @@ Mindkét mód teljes XMLRPC authent használ → 100% kompatibilis Transdrone / 
 ## 🧱 Telepítés
 
 1) Telepítőfájl létrehozása:  
+```bash
 nano rtorrent_installer.sh
 
 2) Másold bele a teljes telepítő scriptet
