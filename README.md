@@ -96,6 +96,26 @@ FONTOS: Domain módban is **IP-t kell használni** Transdrone-hoz, mert a mobila
 
 ---
 
+## 📲 Transdrone letöltése (Android – Google Play)
+
+A legkényelmesebb mobilos torrent-kezeléshez ajánlott alkalmazás:
+
+**Transdrone – Remote torrent manager**
+
+Letöltés Google Play Áruházból:  
+https://play.google.com/store/apps/details?id=org.transdroid.lite
+
+A telepítő által generált XMLRPC beállításokkal teljesen kompatibilis.
+
+Telepítés után:
+
+1. Nyisd meg a Transdrone-t  
+2. Add hozzá → *Add normal, custom server*  
+3. Töltsd ki az adatokat (IP, 8000 port, felhasználó, jelszó, RPC2)  
+4. Kész – távoli vezérlés és torrent kezelés már mobilról is működik
+
+---
+
 ## 🔥 Portok (mind nyitva vannak Dockerben)
 
 8080/tcp → ruTorrent WebUI (IP mód)  
