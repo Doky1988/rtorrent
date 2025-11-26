@@ -1,43 +1,57 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "============================================="
-echo "  rTorrent + ruTorrent Update Script"
-echo "  (Doky-féle seed szerver frissítő)"
-echo "============================================="
-sleep 1
+echo "=== rTorrent + ruTorrent UPDATE (crazy-max) ==="
 
-# --- Root check ---
-if [ "$EUID" -ne 0 ]; then
-  echo "Ezt a scriptet rootként kell futtatni!"
-  exit 1
-fi
-
-INSTALL_DIR="/opt/rtorrent"
-COMPOSE_FILE="${INSTALL_DIR}/docker-compose.yml"
-
-# --- Ellenőrzés: létezik-e a docker-compose.yml ---
-if [ ! -f "$COMPOSE_FILE" ]; then
-  echo "HIBA: Nem találom a docker-compose.yml fájlt itt: $COMPOSE_FILE"
-  echo "Biztos, hogy a Doky-féle telepítő scriptet használtad?"
-  exit 1
-fi
-
+INSTALL_DIR="/opt/rtorrent-rutorrent"
 cd "$INSTALL_DIR"
 
-echo "== Docker image-ek frissítése (pull) =="
-docker compose pull
+CONTAINER="rtorrent_rutorrent"
+CADDY_CONTAINER="caddy"
 
-echo "== Konténerek újraindítása (up -d) =="
-docker compose up -d
+# Ellenőrzés
+if [ ! -f "$INSTALL_DIR/docker-compose.yml" ]; then
+  echo "HIBA: Nincs docker-compose.yml! Rossz könyvtár vagy nincs telepítés?"
+  exit 1
+fi
 
-echo "== Nem használt image-ek törlése (prune) =="
-docker image prune -f
+echo "Telepítési könyvtár: $INSTALL_DIR"
+echo
 
-echo ""
-echo "============================================="
-echo "  ✔ Frissítés kész!"
-echo ""
-echo "  A futó konténerek:"
-docker compose ps
-echo "============================================="
+# 1) Legújabb image letöltése
+echo "→ Legújabb rTorrent image letöltése..."
+docker pull crazymax/rtorrent-rutorrent:latest
+
+# 2) Konténer leállítása
+echo "→ rTorrent konténer leállítása..."
+docker stop "$CONTAINER" >/dev/null 2>&1 || true
+
+# 3) Konténer törlése (csak a futó container, az adat megmarad)
+echo "→ rTorrent konténer eltávolítása..."
+docker rm "$CONTAINER" >/dev/null 2>&1 || true
+
+# 4) Új rTorrent konténer indítása a docker-compose alapján
+echo "→ Konténerek újraindítása docker-compose segítségével..."
+docker compose up -d rtorrent_rutorrent
+
+# 5) Ha van Caddy, azt nem kell törölni — csak optional restart
+if docker ps --format '{{.Names}}' | grep -q "^${CADDY_CONTAINER}$"; then
+  echo "→ Caddy konténer frissítetlen, de újraindítjuk hogy stabil maradjon..."
+  docker restart "$CADDY_CONTAINER" >/dev/null 2>&1 || true
+fi
+
+echo
+echo "=== KÉSZ! rTorrent + ruTorrent sikeresen FRISSÍTVE. ==="
+echo
+echo "Elérés:"
+if docker ps --format '{{.Names}}' | grep -q "^${CADDY_CONTAINER}$"; then
+  echo "  HTTPS WebUI: (domained)"
+else
+  echo "  http://<IP>:8080"
+fi
+
+echo
+echo "Napló megtekintés:"
+echo "  docker logs -f $CONTAINER"
+echo
+echo "Jó seedelést továbbra is! 🚀"
