@@ -1,201 +1,182 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "============================================="
-echo " rTorrent + ruTorrent Seed Telepítő"
-echo " Portnyitással (50000 TCP/UDP, 50010 UDP)"
-echo " Debian 13 | Docker | Caddy | HTTPS | Auth"
-echo "============================================="
-sleep 1
+echo "=== crazy-max rTorrent + ruTorrent Telepítő (IP / DOMAIN mód) ==="
+echo
+echo "Válassz elérési módot:"
+echo "1) IP-ről érhető el (http://IP:8080)"
+echo "2) Domainről érhető el (HTTPS + Caddy, IP tiltva)"
+echo
 
-# --- Root check ---
-if [ "$EUID" -ne 0 ]; then
-  echo "Rootként futtasd!"
-  exit 1
+read -rp "Választás (1/2): " MODE
+
+if [[ "$MODE" != "1" && "$MODE" != "2" ]]; then
+    echo "Érvénytelen választás!"
+    exit 1
 fi
 
-# --- Felhasználónév + Jelszó ---
-read -rp "Add meg a WebUI felhasználónevet: " WEBUSER
-read -rsp "Add meg a WebUI jelszót: " WEBPASS
-echo ""
-
-# --- IP vagy Domain mód ---
-echo ""
-echo "Hogyan szeretnéd elérni a WebUI-t?"
-echo "1) IP címmel (http://IP:8080)"
-echo "2) Domainnel + HTTPS (https://torrent.domain.hu)"
-read -rp "Válassz (1 vagy 2): " CHOICE
-
-USE_DOMAIN="no"
-DOMAIN=""
-
-if [ "$CHOICE" = "2" ]; then
-  USE_DOMAIN="yes"
-  read -rp "Add meg a domaint (pl. torrent.domain.hu): " DOMAIN
+if [[ "$MODE" == "2" ]]; then
+    read -rp "Add meg a domaint (pl. torrent.domain.hu): " DOMAIN
+    if [[ -z "$DOMAIN" ]]; then
+        echo "A domain nem lehet üres!"
+        exit 1
+    fi
 fi
 
-# --- Rendszer frissítés ---
-apt update -y && apt upgrade -y
+INSTALL_DIR="/opt/rtorrent-rutorrent"
+mkdir -p "$INSTALL_DIR"
+cd "$INSTALL_DIR"
 
-# --- Docker telepítés ---
-apt install -y ca-certificates curl gnupg lsb-release openssl
+# --- Auth bekérése ---
+RPC_USER=""
+while [ -z "$RPC_USER" ]; do
+  read -rp "Add meg a ruTorrent / RPC felhasználónevet: " RPC_USER
+done
 
-install -m 0755 -d /etc/apt/keyrings
-if [ ! -f /etc/apt/keyrings/docker.asc ]; then
-  curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-  chmod a+r /etc/apt/keyrings/docker.asc
+RPC_PASS1=""
+RPC_PASS2=""
+while true; do
+  read -srp "Add meg a jelszót: " RPC_PASS1; echo
+  read -srp "Add meg újra: " RPC_PASS2; echo
+  [[ "$RPC_PASS1" == "$RPC_PASS2" && -n "$RPC_PASS1" ]] && break
+  echo "A jelszavak nem egyeznek!"
+done
+
+mkdir -p "$INSTALL_DIR/data" "$INSTALL_DIR/downloads" "$INSTALL_DIR/passwd"
+
+# --- Docker telepítése ---
+if ! command -v docker >/dev/null 2>&1; then
+  echo "=== Docker telepítése ==="
+  apt-get update -y
+  apt-get install -y ca-certificates curl gnupg lsb-release
+  install -m 0755 -d /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  echo \
+"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+$(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+    > /etc/apt/sources.list.d/docker.list
+  apt-get update -y
+  apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 fi
 
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
-  https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
-  > /etc/apt/sources.list.d/docker.list
+# --- htpasswd generálás ---
+docker run --rm -i httpd:2.4-alpine htpasswd -Bbn "$RPC_USER" "$RPC_PASS1" > "$INSTALL_DIR/passwd/rutorrent.htpasswd"
+docker run --rm -i httpd:2.4-alpine htpasswd -Bbn "$RPC_USER" "$RPC_PASS1" > "$INSTALL_DIR/passwd/rpc.htpasswd"
 
-apt update -y
-apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin
+chown -R 1000:1000 "$INSTALL_DIR"
 
-# --- Könyvtárak ---
-mkdir -p /opt/rtorrent/data
-mkdir -p /opt/rtorrent/caddy
-cd /opt/rtorrent
+# -----------------------------
+#   DOCKER-COMPOSE + CADDYFILE
+# -----------------------------
 
-# --- Hash generálás ---
-HASH=$(docker run --rm caddy:latest caddy hash-password --plaintext "$WEBPASS")
+echo "=== Konfiguráció generálása ==="
 
-echo "Generált bcrypt hash:"
-echo "$HASH"
-echo ""
-
-# --- docker-compose generálás ---
-if [ "$USE_DOMAIN" = "no" ]; then
-
-cat > /opt/rtorrent/docker-compose.yml <<EOF
-version: "3.8"
-
+# --- IP mód ---
+if [[ "$MODE" == "1" ]]; then
+cat > "$INSTALL_DIR/docker-compose.yml" <<EOF
 services:
-  rtorrent-rutorrent:
+  rtorrent_rutorrent:
     image: crazymax/rtorrent-rutorrent:latest
-    container_name: rtorrent-rutorrent
-    restart: unless-stopped
-    ports:
-      - "50000:50000/tcp"
-      - "50000:50000/udp"
-      - "50010:50010/udp"
+    container_name: rtorrent_rutorrent
     environment:
-      - RTORRENT__PORT_RANGE=50000-50000
-      - RTORRENT__DHT_PORT=50010
-      - RTORRENT__SCGI=127.0.0.1:50000
-      - WEBROOT=/
+      - TZ=Europe/Budapest
+      - PUID=1000
+      - PGID=1000
     volumes:
-      - /opt/rtorrent/data:/data
-    networks:
-      - rt-net
-
-  rt-proxy:
-    image: caddy:latest
-    container_name: rt-proxy
-    restart: unless-stopped
+      - ./data:/data
+      - ./downloads:/downloads
+      - ./passwd:/passwd
     ports:
-      - "8080:80"
-    volumes:
-      - /opt/rtorrent/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-    networks:
-      - rt-net
-
-networks:
-  rt-net:
-    driver: bridge
+      - 6881:6881/udp
+      - 8080:8080
+      - 8000:8000
+      - 9000:9000
+      - 50000:50000
+    restart: unless-stopped
 EOF
+fi
 
-cat > /opt/rtorrent/caddy/Caddyfile <<EOF
-:80 {
-    encode gzip
-    reverse_proxy rtorrent-rutorrent:8080
+# --- DOMAIN + HTTPS mód ---
+if [[ "$MODE" == "2" ]]; then
 
-    basic_auth * {
-        ${WEBUSER} ${HASH}
+# Javított Caddyfile
+cat > "$INSTALL_DIR/Caddyfile" <<EOF
+$DOMAIN {
+
+    encode gzip zstd
+
+    @static {
+        path /js/* /css/* /plugins/* /share/* /themes/* /lang/* /images/*
     }
+
+    reverse_proxy rtorrent_rutorrent:8080
+
+    @block_ip {
+        not host $DOMAIN
+    }
+    respond @block_ip 403
 }
 EOF
 
-else
-
-cat > /opt/rtorrent/docker-compose.yml <<EOF
-version: "3.8"
-
+# Docker compose
+cat > "$INSTALL_DIR/docker-compose.yml" <<EOF
 services:
-  rtorrent-rutorrent:
+
+  rtorrent_rutorrent:
     image: crazymax/rtorrent-rutorrent:latest
-    container_name: rtorrent-rutorrent
-    restart: unless-stopped
-    ports:
-      - "50000:50000/tcp"
-      - "50000:50000/udp"
-      - "50010:50010/udp"
+    container_name: rtorrent_rutorrent
     environment:
-      - RTORRENT__PORT_RANGE=50000-50000
-      - RTORRENT__DHT_PORT=50010
-      - RTORRENT__SCGI=127.0.0.1:50000
-      - WEBROOT=/
+      - TZ=Europe/Budapest
+      - PUID=1000
+      - PGID=1000
     volumes:
-      - /opt/rtorrent/data:/data
-    networks:
-      - rt-net
-
-  rt-caddy:
-    image: caddy:latest
-    container_name: rt-caddy
-    restart: unless-stopped
+      - ./data:/data
+      - ./downloads:/downloads
+      - ./passwd:/passwd
     ports:
-      - "80:80"
-      - "443:443"
+      - 6881:6881/udp
+      - 8000:8000
+      - 9000:9000
+      - 50000:50000
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    ports:
+      - 80:80
+      - 443:443
     volumes:
-      - /opt/rtorrent/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    networks:
-      - rt-net
-
-volumes:
-  caddy_data:
-  caddy_config:
-
-networks:
-  rt-net:
-    driver: bridge
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    restart: unless-stopped
 EOF
-
-cat > /opt/rtorrent/caddy/Caddyfile <<EOF
-${DOMAIN} {
-    encode gzip
-    reverse_proxy rtorrent-rutorrent:8080
-
-    basic_auth * {
-        ${WEBUSER} ${HASH}
-    }
-}
-EOF
-
 fi
 
-# --- Indítás ---
+# --- Konténerek indítása ---
+echo "=== Konténerek indítása ==="
 docker compose up -d
 
-IP=$(hostname -I | awk '{print $1}')
+echo
+echo "=== KÉSZ! Telepítés befejezve. ==="
+echo
 
-echo "============================================="
-echo "     ✔ Telepítés kész! Seed szerver aktív!"
-echo ""
-if [ "$USE_DOMAIN" = "yes" ]; then
-  echo " WebUI (HTTPS): https://${DOMAIN}"
-else
-  echo " WebUI (HTTP):  http://${IP}:8080"
+if [[ "$MODE" == "1" ]]; then
+  echo "✔️ WebUI IP-ről:"
+  echo "   http://<IP>:8080"
 fi
-echo ""
-echo " Bejövő torrent port: 50000 TCP/UDP (megnyitva)"
-echo " DHT port: 50010 UDP (megnyitva)"
-echo ""
-echo " Felhasználó: ${WEBUSER}"
-echo " Jelszó: (amit megadtál)"
-echo "============================================="
+
+if [[ "$MODE" == "2" ]]; then
+  echo "✔️ WebUI HTTPS-en:"
+  echo "   https://$DOMAIN"
+  echo "❌ IP-ről: 403 tiltva"
+fi
+
+echo
+echo "Transdrone / Transdroid beállítás:"
+echo "   Host: <IP>"
+echo "   Port: 8000"
+echo "   User: $RPC_USER"
+echo "   Pass: (amit megadtál)"
+echo "   Path: /RPC2"
+echo
+echo "rTorrent + ruTorrent működik. Jó seedelést! 🚀"
