@@ -86,7 +86,7 @@ A telepítő script XMLRPC jelszavas elérést készít elő.
 Beállítások:
 
 - Típus: rTorrent  
-- Host: IP CÍMED  
+- Host: IP  
 - Port: 8000  
 - Felhasználó: telepítéskor megadott  
 - Jelszó: telepítéskor megadott  
