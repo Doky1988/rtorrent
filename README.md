@@ -113,7 +113,7 @@ Telepítés után:
 2. Add hozzá → *Add normal, custom server*  
 3. **Töltsd ki az adatokat:**
 
-   - Név: Bármi lehet
+  - Név: Bármi lehet
    - Szerver típus: rTorrent
    - IP vagy hostnév: IP-t írd!
    - Felhasználónév: Telepítőben megadott!
