@@ -1,9 +1,9 @@
 # 🚀 rTorrent + ruTorrent Telepítő (crazy-max) – IP / DOMAIN mód  
-**Debian 12–13 | Docker | Caddy HTTPS (opcionális)**  
+**Debian 13 | Docker | Caddy HTTPS (opcionális)**  
 **Transdrone / Transdroid kompatibilis ✔️**
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Debian-12%2F13-red?style=for-the-badge&logo=debian" />
+  <img src="https://img.shields.io/badge/Debian-13-red?style=for-the-badge&logo=debian" />
   <img src="https://img.shields.io/badge/Docker-Supported-2496ED?style=for-the-badge&logo=docker" />
   <img src="https://img.shields.io/badge/rTorrent-Enabled-00aa00?style=for-the-badge" />
   <img src="https://img.shields.io/badge/ruTorrent-WebUI-blue?style=for-the-badge" />
@@ -23,13 +23,13 @@ Mindkét mód teljes XMLRPC authent használ → 100% kompatibilis Transdrone / 
 
 ## ⭐ Funkciók
 
-- Teljesen automatizált telepítés Debian 12 / 13 alatt  
+- Teljesen automatizált telepítés **Debian 13** alatt  
 - rTorrent + ruTorrent (crazy-max)  
 - XMLRPC jelszó → stabil Transdrone kapcsolat  
 - IP vagy Domain mód választható  
 - DOMAIN módban automatikus Let’s Encrypt tanúsítvány  
 - Javított Caddyfile → ruTorrent UI hibamentes  
-- Torrent portok automatikusan nyitva a Dockerben
+- Torrent portok automatikusan nyitva vannak Dockerben
 
 ---
 
@@ -102,7 +102,7 @@ FONTOS: Domain módban is **IP-t kell használni** Transdrone-hoz, mert a mobila
 80/tcp → Caddy HTTP (DOMAIN mód)  
 443/tcp → Caddy HTTPS (DOMAIN mód)
 
-Torrentezéshez fontos portok automatikusan nyitva vannak:
+A torrentezéshez fontos portok automatikusan nyitva vannak:
 
 - 50000/tcp – incoming TCP  
 - 6881/udp – DHT  
@@ -125,4 +125,4 @@ Frissítés futtatása:
 
 ## 🎉 Kész!
 
-Ez a README lefedi a teljes telepítést, IP/DOMAIN módot, portokat, HTTPS működést és a Transdrone kompatibilitást.
+Ez a README teljesen lefedi a telepítést, IP/DOMAIN módot, portokat, HTTPS működést és a Transdrone kompatibilitást.
