@@ -9,6 +9,7 @@
   <img src="https://img.shields.io/badge/ruTorrent-WebUI-blue?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Caddy-HTTPS-green?style=for-the-badge&logo=caddy" />
   <img src="https://img.shields.io/badge/Transdrone-Compatible-ffcc00?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Author-Doky-purple?style=for-the-badge&logo=github" />
 </p>
 
 Ez a projekt egy teljesen automatizált telepítő scriptet tartalmaz a crazy-max/rtorrent-rutorrent konténerhez.  
@@ -79,7 +80,7 @@ https://yourdomain.hu
 
 A telepítő script XMLRPC jelszavas elérést készít elő.
 
-**Beállítások:**
+Beállítások:
 
 - Típus: rTorrent (HTTP/XMLRPC)  
 - Host: VPS IP  
@@ -126,3 +127,6 @@ Frissítés futtatása:
 ## 🎉 Kész!
 
 Ez a README teljesen lefedi a telepítést, IP/DOMAIN módot, portokat, HTTPS működést és a Transdrone kompatibilitást.
+
+**Készítette: Doky**  
+**2025-11-25**
