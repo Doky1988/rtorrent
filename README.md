@@ -43,11 +43,12 @@ Mindkét mód teljes XMLRPC authent használ → 100% kompatibilis Transdrone / 
 2) Másold bele a teljes telepítő scriptet, és mentsd el.
 
 3) Futási jog adása:  
-
-chmod +x rtorrent_installer.sh
+   ```bash
+   chmod +x rtorrent_installer.sh
 
 4) Telepítés futtatása:  
-./rtorrent_installer.sh
+   ```bash
+   ./rtorrent_installer.sh
 
 A script megkérdezi:
 
