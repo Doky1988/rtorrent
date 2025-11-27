@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# --- Szerver IP lekérése ---
+SERVER_IP=$(hostname -I | awk '{print $1}')
+
 echo "=== crazy-max rTorrent + ruTorrent Telepítő (IP / DOMAIN mód) ==="
 echo
 echo "Válassz elérési módot:"
@@ -16,7 +19,7 @@ if [[ "$MODE" != "1" && "$MODE" != "2" ]]; then
 fi
 
 if [[ "$MODE" == "2" ]]; then
-    read -rp "Add meg a domaint (pl. torrent.domain.hu): " DOMAIN
+    read -rp "Add meg a domaint (pl. rt.domain.hu): " DOMAIN
     if [[ -z "$DOMAIN" ]]; then
         echo "A domain nem lehet üres!"
         exit 1
@@ -65,10 +68,6 @@ docker run --rm -i httpd:2.4-alpine htpasswd -Bbn "$RPC_USER" "$RPC_PASS1" > "$I
 
 chown -R 1000:1000 "$INSTALL_DIR"
 
-# -----------------------------
-#   DOCKER-COMPOSE + CADDYFILE
-# -----------------------------
-
 echo "=== Konfiguráció generálása ==="
 
 # --- IP mód ---
@@ -96,10 +95,10 @@ services:
 EOF
 fi
 
-# --- DOMAIN + HTTPS mód ---
+# --- DOMAIN mód + HTTPS ---
 if [[ "$MODE" == "2" ]]; then
 
-# Javított Caddyfile
+# Caddyfile
 cat > "$INSTALL_DIR/Caddyfile" <<EOF
 $DOMAIN {
 
@@ -118,7 +117,7 @@ $DOMAIN {
 }
 EOF
 
-# Docker compose
+# Docker compose domain módhoz
 cat > "$INSTALL_DIR/docker-compose.yml" <<EOF
 services:
 
@@ -152,31 +151,37 @@ services:
 EOF
 fi
 
-# --- Konténerek indítása ---
 echo "=== Konténerek indítása ==="
 docker compose up -d
 
 echo
-echo "=== KÉSZ! Telepítés befejezve. ==="
+echo "============================================"
+echo "      🎉 Telepítés sikeresen befejezve 🎉"
+echo "============================================"
 echo
 
 if [[ "$MODE" == "1" ]]; then
-  echo "✔️ WebUI IP-ről:"
-  echo "   http://<IP>:8080"
-fi
-
-if [[ "$MODE" == "2" ]]; then
-  echo "✔️ WebUI HTTPS-en:"
-  echo "   https://$DOMAIN"
-  echo "❌ IP-ről: 403 tiltva"
+  echo "🔧 Telepítési mód:"
+  echo "   ➤ IP mód"
+  echo
+  echo "🌐 WebUI:"
+  echo "   ➤ http://$SERVER_IP:8080"
+else
+  echo "🔧 Telepítési mód:"
+  echo "   ➤ Domain mód"
+  echo "     ⚠ IP-címről a WebUI tiltva van, de a Transdrone hozzáférést ez nem érinti."
+  echo
+  echo "🌐 WebUI:"
+  echo "   ➤ https://$DOMAIN"
 fi
 
 echo
-echo "Transdrone beállítás:"
-echo "   Host: <IP>"
-echo "   Port: 8000"
-echo "   User: $RPC_USER"
-echo "   Pass: (amit megadtál)"
-echo "   Path: /RPC2"
+echo "📱 Transdrone:"
+echo "   • Host: $SERVER_IP"
+echo "   • Port: 8000"
+echo "   • User: $RPC_USER"
+echo "   • Pass: $RPC_PASS1"
+echo "   • Path: /RPC2"
 echo
-echo "rTorrent + ruTorrent működik. Jó seedelést! 🚀"
+echo "🚀 rTorrent + ruTorrent sikeresen fut!"
+echo
