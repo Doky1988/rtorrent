@@ -154,6 +154,48 @@ fi
 echo "=== Konténerek indítása ==="
 docker compose up -d
 
+#############################################################
+# 🔐 WEBDAV AUTH BEÉPÍTÉSE — TELEPÍTÉS UTÁN
+#############################################################
+
+echo
+echo "🔒 Szeretnél WebDAV hozzáférést lezárni felhasználó/jelszó párossal?"
+echo "   (Ha nem, akkor továbbra is nyilvánosan elérhető marad: http://$SERVER_IP:9000)"
+echo
+read -rp "WebDAV hitelesítés beállítása? (i/n): " WEBDAV_CHOICE
+
+WEBDAV_ENABLED="no"
+WEBDAV_USER=""
+WEBDAV_PASS1=""
+
+if [[ "$WEBDAV_CHOICE" =~ ^[iI]$ ]]; then
+    WEBDAV_ENABLED="yes"
+
+    echo
+    read -rp "WebDAV felhasználónév: " WEBDAV_USER
+
+    while true; do
+        read -srp "Jelszó: " WEBDAV_PASS1; echo
+        read -srp "Jelszó újra: " WEBDAV_PASS2; echo
+        [[ "$WEBDAV_PASS1" == "$WEBDAV_PASS2" && -n "$WEBDAV_PASS1" ]] && break
+        echo "A jelszavak nem egyeznek!"
+    done
+
+    echo
+    echo "🔐 WebDAV htpasswd generálása..."
+    docker run --rm -i httpd:2.4-alpine htpasswd -Bbn "$WEBDAV_USER" "$WEBDAV_PASS1" > "$INSTALL_DIR/passwd/webdav.htpasswd"
+
+    echo "🔄 rTorrent újraindítása a WebDAV auth érvényesítéséhez..."
+    docker compose restart rtorrent_rutorrent
+    echo "✅ rTorrent újraindítva."
+
+    echo "✅ WebDAV sikeresen lezárva felhasználónév/jelszóval!"
+fi
+
+#############################################################
+#              FINAL ÖSSZEGZÉS
+#############################################################
+
 echo
 echo "============================================"
 echo "      🎉 Telepítés sikeresen befejezve 🎉"
@@ -166,22 +208,42 @@ if [[ "$MODE" == "1" ]]; then
   echo
   echo "🌐 WebUI:"
   echo "   ➤ http://$SERVER_IP:8080"
+  echo "    • Felhasználónév: $RPC_USER"
+  echo "    • Jelszó: $RPC_PASS1"
 else
   echo "🔧 Telepítési mód:"
   echo "   ➤ Domain mód"
-  echo "     ⚠ IP-címről a WebUI tiltva van, de a Transdrone hozzáférést ez nem érinti."
+  echo "     ⚠ IP-címről a WebUI tiltva van,"
+  echo "       de a Transdrone hozzáférést ez nem érinti."
   echo
   echo "🌐 WebUI:"
   echo "   ➤ https://$DOMAIN"
+  echo "    • Felhasználónév: $RPC_USER"
+  echo "    • Jelszó: $RPC_PASS1"
+fi
+
+echo
+echo "🗂 WebDAV (Letöltési mappa):"
+echo "   ➤ http://$SERVER_IP:9000"
+
+if [[ "$WEBDAV_ENABLED" == "yes" ]]; then
+    echo "   • Felhasználónév: $WEBDAV_USER"
+    echo "   • Jelszó: $WEBDAV_PASS1"
+else
+    echo "   ⚠ Jelszó nélkül elérhető!"
+    echo "     (Nyilvános hozzáférés)"
 fi
 
 echo
 echo "📱 Transdrone:"
-echo "   • Host: $SERVER_IP"
-echo "   • Port: 8000"
-echo "   • User: $RPC_USER"
-echo "   • Pass: $RPC_PASS1"
-echo "   • Path: /RPC2"
+echo "   • Név: rTorrent (bármi lehet)"
+echo "   • Szerver típus: rTorrent"
+echo "   • IP vagy host név: $SERVER_IP"
+echo "   • Port szám: 8000"
+echo "   • Felhasználónév: $RPC_USER"
+echo "   • Jelszó: $RPC_PASS1"
+echo "   • SCGI csatlakozási pont: /RPC2"
+
 echo
 echo "🚀 rTorrent + ruTorrent sikeresen fut!"
 echo
