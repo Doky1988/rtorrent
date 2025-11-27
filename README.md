@@ -58,10 +58,10 @@ A telepítő emellett opcionálisan WebDAV hitelesítést is kérdez, amellyel b
 A script megkérdezi:
 
 - IP vagy Domain mód  
-- Domain név (HTTPS esetén)  
+- Domain név (Domain mód esetén)  
 - Felhasználónév  
 - Jelszó  
-- WebDAV jelszóvédelem szükséges-e  
+- WebDAV jelszóvédelem szükséges-e (ha igent választod, bekéri a felhasználónevet és jelszót.  
 
 ---
 
