@@ -79,24 +79,7 @@ https://te.domained.hu
 
 ---
 
-## 📱 Transdrone / Transdroid beállítás
-
-A telepítő script XMLRPC jelszavas elérést készít elő.
-
-Beállítások:
-
-- Típus: rTorrent  
-- Host: IP  
-- Port: 8000  
-- Felhasználó: telepítéskor megadott  
-- Jelszó: telepítéskor megadott  
-- RPC Path: /RPC2  
-
-FONTOS: Domain módban is **IP-t kell használni** Transdrone-hoz, mert a mobilapp nem működik HTTPS reverse proxy mögött.
-
----
-
-## 📲 Transdrone letöltése (Android – Google Play)
+## 📲 Transdrone
 
 A legkényelmesebb mobilos torrent-kezeléshez ajánlott alkalmazás:
 
@@ -124,7 +107,9 @@ Telepítés után:
    - Port szám: 8000
    - SCGI csatlakozási pont: /RPC2
  
-4. Kész – távoli vezérlés és torrent kezelés már mobilról is működik
+4. Kész – távoli vezérlés és torrent kezelés már mobilról is működik.
+
+FONTOS: Domain módban is **IP-t kell használni** Transdrone-hoz, mert a mobilapp nem működik HTTPS reverse proxy mögött.
 
 ---
 
