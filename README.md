@@ -98,7 +98,7 @@ Telepítés után:
 
   - Név: Bármi lehet
   - Szerver típus: rTorrent
-  - IP vagy hostnév: IP-t írd!
+  - IP vagy hostnév: Szervered IP-je
   - Felhasználónév: Telepítőben megadott!
   - Jelszó: Telepítőben megadott!
 
