@@ -130,6 +130,19 @@ A torrentezéshez fontos portok automatikusan nyitva vannak:
 
 ---
 
+## 🔧 Konténerek kézi frissítése
+
+A konténerek manuálisan is frissíthetők sima Docker parancsokkal.
+
+1. A konténerek kézi frissítéséhez futtasd:
+   ```bash
+   cd /opt/rtorrent-rutorrent
+   docker compose pull
+   docker compose up -d
+   docker image prune -f
+
+---
+
 ## 🔄 Frissítés (UPDATE script)
 
 A projekt frissítő scriptet is tartalmaz, amely:
