@@ -61,7 +61,7 @@ A script megkérdezi:
 - Domain név (Domain mód esetén)  
 - Felhasználónév  
 - Jelszó  
-- WebDAV jelszóvédelem szükséges-e (ha igent választod, bekéri a felhasználónevet és jelszót.  
+- WebDAV jelszóvédelem szükséges-e (ha (i) azaz igennel válaszolsz, bekéri a felhasználónevet és jelszót.  
 
 ---
 
