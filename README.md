@@ -172,5 +172,7 @@ A projekt frissítő scriptet is tartalmaz, amely:
 
 Ez a README teljesen lefedi a telepítést, IP/DOMAIN módot, portokat, HTTPS működést és a Transdrone kompatibilitást.
 
-**Készítette: Doky**  
-**2025-11-25**
+---
+
+## ❤️ Készítette: Doky  
+📅 2025.11.25
