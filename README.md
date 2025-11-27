@@ -1,12 +1,14 @@
 # 🚀 rTorrent + ruTorrent Telepítő (crazy-max) – IP / DOMAIN mód  
 **Debian 13 | Docker | Caddy HTTPS (opcionális)**  
-**Transdrone / Transdroid kompatibilis ✔️**
+**Transdrone kompatibilis ✔️**  
+**WebDAV támogatás – jelszóval védhető ✔️**
 
 <p align="center">
   <img src="https://img.shields.io/badge/Debian-13-red?style=for-the-badge&logo=debian" />
   <img src="https://img.shields.io/badge/Docker-Supported-2496ED?style=for-the-badge&logo=docker" />
   <img src="https://img.shields.io/badge/rTorrent-Enabled-00aa00?style=for-the-badge" />
   <img src="https://img.shields.io/badge/ruTorrent-WebUI-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/WebDAV-Secure-ff8800?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Caddy-HTTPS-green?style=for-the-badge&logo=caddy" />
   <img src="https://img.shields.io/badge/Transdrone-Compatible-ffcc00?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Author-Doky-purple?style=for-the-badge&logo=github" />
@@ -15,47 +17,51 @@
 Ez a projekt egy teljesen automatizált telepítő scriptet tartalmaz a crazy-max/rtorrent-rutorrent konténerhez.  
 A telepítés során választható:
 
-- **IP mód** → WebUI: http://IP:8080  
-- **DOMAIN mód** → HTTPS (Caddy) + IP tiltás (403)
+- IP mód → WebUI: http://IP:8080  
+- DOMAIN mód → HTTPS (Caddy) + IP tiltás (403)
 
-Mindkét mód teljes XMLRPC authent használ → 100% kompatibilis Transdrone / Transdroid appokkal.
+Mindkét mód teljes XMLRPC authent használ → 100% kompatibilis Transdrone applikációval.  
+A telepítő emellett opcionálisan WebDAV hitelesítést is kérdez, amellyel biztonságosan elérhető a /downloads/complete mappa.
 
 ---
 
 ## ⭐ Funkciók
 
-- Teljesen automatizált telepítés **Debian 13** alatt  
+- Teljesen automatizált telepítés Debian 13 alatt  
 - rTorrent + ruTorrent (crazy-max)  
+- Opcionális WebDAV védelem felhasználónév / jelszó párossal  
 - XMLRPC jelszó → stabil Transdrone kapcsolat  
 - IP vagy Domain mód választható  
-- DOMAIN módban automatikus Let’s Encrypt tanúsítvány  
-- Javított Caddyfile → ruTorrent UI hibamentes  
-- Torrent portok automatikusan nyitva vannak Dockerben
+- Domain módban automatikus Let’s Encrypt tanúsítvány  
+- Javított Caddyfile → ruTorrent hibamentes  
+- Torrent portok automatikusan nyitva vannak  
+- WebDAV védelem beállítása után automatikus konténer-újraindítás
 
 ---
 
 ## 🧱 Telepítés
 
-1) Telepítőfájl létrehozása:  
+1) Telepítőfájl létrehozása:
    ```bash
    nano rtorrent_installer.sh
 
-2) Másold bele a teljes telepítő scriptet, és mentsd el.
+2) Másold bele az itt található **rtorrent_installer.sh** script tartalmát, majd mentsd el.
 
-3) Futási jog adása:  
+3) Futási jog adása:
    ```bash
    chmod +x rtorrent_installer.sh
 
-4) Telepítés futtatása:  
+4) Telepítés futtatása:
    ```bash
    ./rtorrent_installer.sh
 
 A script megkérdezi:
 
-- IP / Domain mód  
-- Domain név (ha HTTPS-t választottad)  
+- IP vagy Domain mód  
+- Domain név (HTTPS esetén)  
 - Felhasználónév  
 - Jelszó  
+- WebDAV jelszóvédelem szükséges-e  
 
 ---
 
@@ -63,19 +69,38 @@ A script megkérdezi:
 
 ### 🔵 IP mód
 WebUI:  
-http://IP:8080  
+http://IP:8080
 
-Egyszerű, gyors, proxy nélkül.  
-Transdrone: IP:8000 porton működik.
+Transdrone: IP:8000  
+WebDAV: http://IP:9000
+
+---
 
 ### 🟢 DOMAIN mód (HTTPS + Caddy)
 WebUI:  
-https://te.domained.hu  
+https://sajat.domain.hu
 
-- Automatikus Let’s Encrypt tanúsítvány  
-- IP-ről WebUI → 403 Forbidden  
-- ruTorrent UI hibátlan (javított proxy)  
-- Transdrone → továbbra is IP:8000 (nem proxyzva)
+- Automatikus Let’s Encrypt  
+- IP-ről WebUI tiltva → 403  
+- Transdrone továbbra is IP:8000  
+- WebDAV továbbra is IP:9000  
+
+---
+
+## 🗂 WebDAV – /downloads/complete elérése
+
+A crazy-max image alapértelmezetten WebDAV-on teszi elérhetővé a /downloads/complete mappát a 9000-es porton.
+
+A telepítő rákérdez:
+
+- Nyilvános WebDAV (jelszó nélkül, nem biztonságos)  
+- VAGY WebDAV lezárása felhasználónév + jelszó párossal  
+
+A telepítő automatikusan létrehozza a passwd/webdav.htpasswd fájlt,  
+és újraindítja az rtorrent konténert → a védelem azonnal életbe lép.
+
+WebDAV URL:  
+http://IP:9000
 
 ---
 
@@ -113,64 +138,62 @@ FONTOS: Domain módban is **IP-t kell használni** Transdrone-hoz, mert a mobila
 
 ---
 
-## 🔥 Portok (mind nyitva vannak Dockerben)
+## 🔥 Portok
 
-8080/tcp → ruTorrent WebUI (IP mód)  
-8000/tcp → XMLRPC (Transdrone)  
-9000/tcp → SCGI backend  
-50000/tcp → Torrent bejövő port ✔️  
-6881/udp → DHT / uTP port ✔️  
-80/tcp → Caddy HTTP (DOMAIN mód)  
-443/tcp → Caddy HTTPS (DOMAIN mód)
-
-A torrentezéshez fontos portok automatikusan nyitva vannak:
-
-- 50000/tcp – incoming TCP  
-- 6881/udp – DHT  
+8080/tcp → WebUI (IP mód)  
+8000/tcp → XMLRPC / Transdrone  
+9000/tcp → WebDAV  
+50000/tcp → Torrent TCP bejövő port  
+6881/udp → DHT  
+80/tcp → Caddy HTTP (domain mód)  
+443/tcp → Caddy HTTPS (domain mód)
 
 ---
 
 ## 🔧 Konténerek kézi frissítése
 
-A konténerek manuálisan is frissíthetők sima Docker parancsokkal.
-
-1. A konténerek kézi frissítéséhez futtasd:
-   ```bash
-   cd /opt/rtorrent-rutorrent
-   docker compose pull
-   docker compose up -d
-   docker image prune -f
+cd /opt/rtorrent-rutorrent  
+docker compose pull  
+docker compose up -d  
+docker image prune -f
 
 ---
 
 ## 🔄 Frissítés (UPDATE script)
 
-A projekt frissítő scriptet is tartalmaz, amely:
+1) Frissítőfájl létrehozása:
+    ```bash
+    nano /opt/rtorrent-rutorrent/rtorrent_updater.sh
 
-- Letölti a legújabb rTorrent image-et  
-- Újraindítja a rTorrent konténert  
-- DOMAIN módban automatikusan újraindítja a Caddyt  
+2) Másold bele az itt található **rtorrent_updater.sh** script tartalmát, majd mentsd el.
+
+3) Futási jog adása:
+    ```bash
+    chmod +x /opt/rtorrent-rutorrent/rtorrent_updater.sh
+
+4) Futtatás:
+    ```bash
+    /opt/rtorrent-rutorrent/rtorrent_updater.sh
+
+A frissítő:
+
+- Letölti a legújabb image-eket  
+- Újraindítja rTorrent-et  
+- Domain módban újraindítja a Caddyt  
 - Minden beállítás megmarad  
-
-1) Frissítőfájl létrehozása:  
-   ```bash
-   nano /opt/rtorrent-rutorrent/rtorrent_updater.sh
-
-2) Másold bele a teljes telepítő scriptet, és mentsd el.
-
-3) Futási jog adása:  
-   ```bash
-   chmod +x /opt/rtorrent-rutorrent/rtorrent_updater.sh
-
-4) Frissítés futtatása:  
-   ```bash
-   /opt/rtorrent-rutorrent/rtorrent_updater.sh
 
 ---
 
 ## 🎉 Kész!
 
-Ez a README teljesen lefedi a telepítést, IP/DOMAIN módot, portokat, HTTPS működést és a Transdrone kompatibilitást.
+Ez a README lefedi:
+
+- IP / DOMAIN mód  
+- HTTPS működés  
+- Transdrone kompatibilitás  
+- WebDAV használat + biztonság  
+- Portlista  
+- Frissítési útmutató  
 
 ---
 
