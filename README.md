@@ -89,14 +89,21 @@ https://sajat.domain.hu
 
 ## 🗂 WebDAV – /downloads/complete elérése
 
-A crazy-max image alapértelmezetten WebDAV-on teszi elérhetővé a /downloads/complete mappát a 9000-es porton.
+A crazy-max image alapértelmezetten nyilvánosan elérhetővé teszi az interneten (WebDAV segítségével),
+tehát azonosítás nélkül a /downloads/complete mappát a 9000-es porton.
 
-A telepítő rákérdez:
+Így kevésbé biztonságos módon, ha valaki tudja a szerver IP címét és a portot, akkor hozzáfér az rTorrent (Complete) letöltési mappájához.
 
-- Nyilvános WebDAV (jelszó nélkül, nem biztonságos)  
+Törölni nem tud, módosítani sem, de láthatja az összes letöltésed, és le is tölthet mindent.
+
+Ezért ha nem szeretnéd, hogy bárki láthassa véletlenül is akár a letöltéseid, **AJÁNLOTT** jelszóval védeni!
+
+Ezért a telepítő rákérdez:
+
+- Nyilvános WebDAV legyen (jelszó nélkül, nem biztonságos)  
 - VAGY WebDAV lezárása felhasználónév + jelszó párossal  
 
-A telepítő automatikusan létrehozza a passwd/webdav.htpasswd fájlt,  
+A telepítő automatikusan létrehozza igen válasz (i) esetén a felhasználónév és jelszó megadása után passwd/webdav.htpasswd fájlt,  
 és újraindítja az rtorrent konténert → a védelem azonnal életbe lép.
 
 WebDAV URL:  
