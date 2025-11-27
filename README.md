@@ -96,7 +96,7 @@ tehát azonosítás nélkül a /downloads/complete mappát a 9000-es porton.
 
 Törölni nem tud, módosítani sem, de láthatja az összes letöltésed, és le is tölthet mindent.
 
-Ezért ha nem szeretnéd, hogy bárki láthassa véletlenül is akár a letöltéseid, **AJÁNLOTT** jelszóval védeni!
+Ezért ha nem szeretnéd, hogy bárki láthassa véletlenül is a letöltéseid, **AJÁNLOTT** jelszóval védeni!
 
 Ezért a telepítő rákérdez:
 
