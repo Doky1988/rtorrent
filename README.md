@@ -71,8 +71,7 @@ A script megkérdezi:
 WebUI:  
 http://IP:8080
 
-Transdrone: IP:8000  
-WebDAV: http://IP:9000
+WebDAV: http://IP:9000  
 
 ---
 
@@ -80,10 +79,10 @@ WebDAV: http://IP:9000
 WebUI:  
 https://sajat.domain.hu
 
+WebDAV: http://IP:9000  
+
 - Automatikus Let’s Encrypt  
-- IP-ről WebUI tiltva → 403  
-- Transdrone továbbra is IP:8000  
-- WebDAV továbbra is IP:9000  
+- IP-ről WebUI tiltva → 403   
 
 ---
 
@@ -111,7 +110,7 @@ http://IP:9000
 
 ---
 
-## 📲 Transdrone
+## 📲 Transdrone letöltése és beállítása
 
 A legkényelmesebb mobilos torrent-kezeléshez ajánlott alkalmazás:
 
@@ -197,7 +196,7 @@ Ez a README lefedi:
 
 - IP / DOMAIN mód  
 - HTTPS működés  
-- Transdrone kompatibilitás  
+- Transdrone letöltése és beállítása 
 - WebDAV használat + biztonság  
 - Portlista  
 - Frissítési útmutató  
