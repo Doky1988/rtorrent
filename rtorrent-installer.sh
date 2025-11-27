@@ -172,7 +172,7 @@ if [[ "$MODE" == "2" ]]; then
 fi
 
 echo
-echo "Transdrone / Transdroid beállítás:"
+echo "Transdrone beállítás:"
 echo "   Host: <IP>"
 echo "   Port: 8000"
 echo "   User: $RPC_USER"
