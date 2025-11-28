@@ -185,7 +185,7 @@ A frissítő:
 
 - Letölti a legújabb image-eket  
 - Újraindítja rTorrent-et  
-- Domain módban újraindítja a Caddyt  
+- Ujraindítja a Caddyt  
 - Minden beállítás megmarad  
 
 ---
